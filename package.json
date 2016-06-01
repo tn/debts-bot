@@ -4,7 +4,7 @@
   "description": "Telegram Debts Bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "forever start index.js"
   },
   "keywords": [
     "bot",
@@ -13,5 +13,11 @@
     "finance"
   ],
   "author": "tn <t.nurislamov@gmail.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "forever": "^0.15.2",
+    "mongoose": "^4.4.14",
+    "node-telegram-bot-api": "^0.21.1",
+    "use-strict": "^1.0.1"
+  }
 }
