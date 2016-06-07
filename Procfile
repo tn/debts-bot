@@ -1,1 +1,1 @@
-web: ./node_modules/.bin/forever -m 5 index.js
+web: ./node_modules/.bin/forever -m 10 index.js

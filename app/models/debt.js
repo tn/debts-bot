@@ -1,13 +1,39 @@
 const mongoose = require('mongoose');
-let Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
 const DebtSchema = new Schema({
-  title: String,
+  group: { type: Number, max: 1000000 },
   created_at: { type: Date, default: Date.now },
-  closed: Boolean,
   author: String,
   dest: String,
-  sum: Number
+  sum: Number,
+  currency: { type: String, default: 'руб.' }
 });
 
-module.exports = mongoose.model('Debt', DebtSchema);
+module.exports = class DebtModel {
+  constructor () {}
+
+  getInstance () {
+    return mongoose.model('Debt', DebtSchema);
+  }
+
+  save (data) {
+    let debt = this.getInstance();
+    debt = new debt(data);
+    return debt.save();
+  }
+
+  findByName (name, type, callback) {
+    let debts = this.getInstance();
+
+    if (type === 'author') {
+      debts.find({
+        author: new RegExp(name)
+      }).limit(30).exec(callback);
+    } else {
+      debts.find({
+        dest: new RegExp(name)
+      }).limit(30).exec(callback);
+    }
+  }
+};
