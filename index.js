@@ -1,5 +1,9 @@
 require('use-strict');
-
+const http = require('http');
 const App = require('./app/router');
 
-new App();
+var server = http.createServer(function(req, res) {
+    new App();
+});
+
+server.listen(8080);
