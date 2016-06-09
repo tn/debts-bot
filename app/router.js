@@ -13,7 +13,7 @@ module.exports = class Router {
     Connection.once('open', function () {
       let ctrl = new Ctrl();
 
-      Msgr.onText(/\/debt (@[a-z0-9]+) ([0-9]+)/gi, ctrl.save.bind(this));
+      Msgr.onText(/\/debt (@[a-z0-9]+) ([-0-9]+)/gi, ctrl.save.bind(this));
       Msgr.onText(/\/mydebts/gi, ctrl.index.bind(this));
       Msgr.onText(/\/debtsforme/gi, ctrl.reverseIndex.bind(this));
     });

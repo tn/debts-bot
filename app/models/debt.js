@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 
 const DebtSchema = new Schema({
   group: { type: Number, max: 1000000 },
-  created_at: { type: Date, default: Date.now },
   author: String,
   dest: String,
   sum: Number,
@@ -23,17 +22,32 @@ module.exports = class DebtModel {
     return debt.save();
   }
 
+  update (data, sum, callback) {
+    let debt = this.getInstance();
+
+    debt.findOneAndUpdate(data, { sum: sum }, callback);
+  }
+
+  findByAuthorAndDest (author, dest, callback) {
+    let debts = this.getInstance();
+
+    debts.findOne({
+      author: new RegExp(author),
+      dest: new RegExp(dest)
+    }, 'sum', callback);
+  }
+
   findByName (name, type, callback) {
     let debts = this.getInstance();
 
     if (type === 'author') {
       debts.find({
         author: new RegExp(name)
-      }).limit(30).exec(callback);
+      }).exec(callback);
     } else {
       debts.find({
         dest: new RegExp(name)
-      }).limit(30).exec(callback);
+      }).exec(callback);
     }
   }
 };

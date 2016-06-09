@@ -1,16 +1,12 @@
 const Msgr = require('../bootstrap').bot;
-const Renderer = require('../renderer');
 const DebtModel = require('../models/debt');
-const moment = require('moment');
 
 module.exports = class DebtsController {
   /**
   * Constructor
   * param @userId String
   */
-  constructor () {
-
-  };
+  constructor () {};
 
   /**
   * Index
@@ -20,13 +16,16 @@ module.exports = class DebtsController {
   index (msg) {
     let userName = `@${msg.from.username}`;
     this.model = new DebtModel();
-    let render = new Renderer();
+    let message = 'Your debts\n==========\n';
 
     let filtered = this.model.findByName(userName, 'author', function (err, doc) {
       if (err) {
-        Msgr.sendMessage(msg.chat.id, 'Произошла ошибка.');
+        Msgr.sendMessage(msg.chat.id, 'Something is wrong. Please try later.');
       } else {
-        Msgr.sendMessage(msg.chat.id, render.myDebts(doc));
+        for (let item of doc) {
+          message += `Your debt to ${item.dest} equals ${item.sum}\n`;
+        }
+        Msgr.sendMessage(msg.chat.id, message);
       }
     });
   }
@@ -34,13 +33,16 @@ module.exports = class DebtsController {
   reverseIndex (msg) {
     let userName = `@${msg.from.username}`;
     this.model = new DebtModel();
-    let render = new Renderer();
+    let message = 'Debts to you\n==========\n';
 
     let filtered = this.model.findByName(userName, 'dest', function (err, doc) {
       if (err) {
-        Msgr.sendMessage(msg.chat.id, 'Произошла ошибка.');
+        Msgr.sendMessage(msg.chat.id, 'Something is wrong. Please try later.');
       } else {
-        Msgr.sendMessage(msg.chat.id, render.debtsForMe(doc));
+        for (let item of doc) {
+          message += `Debt from ${item.author} equals ${item.sum}\n`;
+        }
+        Msgr.sendMessage(msg.chat.id, message);
       }
     });
   }
@@ -63,20 +65,37 @@ module.exports = class DebtsController {
       group: msg.chat.id,
       author: `@${msg.from.username}`,
       dest: match[1],
-      sum: match[2],
-      created_at: moment().format('DD-MM-YYYY')
+      sum: match[2]
     };
 
-    this.model = new DebtModel();
-    let render = new Renderer();
+    let model = new DebtModel();
 
-    let saved = this.model.save(debt);
+    let sum = model.findByAuthorAndDest(debt.author, debt.dest, function (err, doc) {
+      if (doc !== null && err === null) {
+        let newSum = parseInt(doc.sum) + parseInt(debt.sum);
 
-    saved.then(function (doc) {
-      if (typeof doc === 'object') {
-        Msgr.sendMessage(msg.chat.id, render.save(debt));
+        if (newSum < 0) {
+          Msgr.sendMessage(msg.chat.id, `Debt can't be negative. Your debt to ${debt.dest} equals ${doc.sum}`);
+          return false;
+        } else {
+          model.update({ author: debt.author, dest: debt.dest }, newSum, function (err, doc) {
+            if (!err) {
+              Msgr.sendMessage(msg.chat.id, `Your debt to ${debt.dest} equals ${newSum}`);
+            } else {
+              Msgr.sendMessage(msg.chat.id, 'Something is wrong. Please try later.');
+            }
+          });
+        }
       } else {
-        Msgr.sendMessage(msg.chat.id, 'Произошла ошибка. Проверьте параметры.');
+        let saved = model.save(debt);
+
+        saved.then(function (err, doc) {
+          if (doc !== null) {
+            Msgr.sendMessage(msg.chat.id, `Your debt to ${debt.dest} equals ${debt.sum}`);
+          } else {
+            Msgr.sendMessage(msg.chat.id, 'Something is wrong. Please try later.');
+          }
+        });
       }
     });
   }
