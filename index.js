@@ -1,5 +1,9 @@
 require('use-strict');
-
+const express = require('express');
 const App = require('./app/router');
 
-new App();
+var app = express();
+
+var server = app.listen(process.env.PORT, function () {
+  new App();
+});
