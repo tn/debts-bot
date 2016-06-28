@@ -5,7 +5,7 @@ module.exports = class DebtsController {
   constructor () {};
 
   start (msg) {
-    let message = 'Let\'s get start!\n/debt @username sum - Create new debt\n/mydebts - Your debts\n/debtsforme - Debts to you';
+    let message = 'Let\'s get start!\n/debt @username sum - Create new debt\n/mydebts - Your debts\n/debtsforme - Debts to you\n\nExamples:\n/debt @username 300 or /debt @username -100';
 
     Msgr.sendMessage(msg.chat.id, message);
   };
