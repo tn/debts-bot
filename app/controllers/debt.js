@@ -2,17 +2,14 @@ const Msgr = require('../bootstrap').bot;
 const DebtModel = require('../models/debt');
 
 module.exports = class DebtsController {
-  /**
-  * Constructor
-  * param @userId String
-  */
   constructor () {};
 
-  /**
-  * Index
-  * Get all debts by user name
-  * return Array
-  */
+  start (msg) {
+    let message = 'Let\'s get start!\n/debt @username sum - Create new debt\n/mydebts - Your debts\n/debtsforme - Debts to you';
+
+    Msgr.sendMessage(msg.chat.id, message);
+  };
+
   index (msg) {
     let userName = `@${msg.from.username}`;
     this.model = new DebtModel();

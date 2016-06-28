@@ -16,6 +16,7 @@ module.exports = class Router {
       Msgr.onText(/\/debt (@[a-z0-9]+) ([-0-9]+)/gi, ctrl.save.bind(this));
       Msgr.onText(/\/mydebts/gi, ctrl.index.bind(this));
       Msgr.onText(/\/debtsforme/gi, ctrl.reverseIndex.bind(this));
+      Msgr.onText(/\/start/gi, ctrl.start.bind(this));
     });
   }
 }
